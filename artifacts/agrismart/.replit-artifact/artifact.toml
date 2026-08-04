@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "AgriSmart"
+description = "AgriSmart – Intelligent Farm Management and Decision Support System. A full-stack web app for farmers to manage farms, monitor crop health, receive fertilizer recommendations, track expenses, detect crop diseases with AI, view live market prices, get weather forecasts, and see crop price predictions — all with an admin panel and role-based access."
+version = "1.0.0"
+id = "artifacts/agrismart"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 19937
+
+[services.development]
+run = "pnpm --filter @workspace/agrismart run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/agrismart", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/agrismart/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19937"
+BASE_PATH = "/"

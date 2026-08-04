@@ -3,20 +3,40 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: AgriSmart – Intelligent Farm Management and Decision Support System API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: users
+    description: User profile
+  - name: farms
+    description: Farm management
+  - name: crops
+    description: Crop management
+  - name: expenses
+    description: Expense tracking
+  - name: disease
+    description: Disease detection
+  - name: fertilizer
+    description: Fertilizer recommendations
+  - name: prices
+    description: Crop market prices
+  - name: weather
+    description: Weather data
+  - name: dashboard
+    description: Dashboard summary
+  - name: admin
+    description: Admin operations
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +44,651 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  # ─── Users ───────────────────────────────────────────────────────────────────
+  /me:
+    get:
+      operationId: getMe
+      tags: [users]
+      summary: Get current user profile
+      responses:
+        "200":
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+        "401":
+          description: Unauthorized
+    put:
+      operationId: updateMe
+      tags: [users]
+      summary: Update current user profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserProfileUpdate"
+      responses:
+        "200":
+          description: Updated profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+        "401":
+          description: Unauthorized
+
+  # ─── Farms ───────────────────────────────────────────────────────────────────
+  /farms:
+    get:
+      operationId: listFarms
+      tags: [farms]
+      summary: List all farms for the current user
+      responses:
+        "200":
+          description: List of farms
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Farm"
+    post:
+      operationId: createFarm
+      tags: [farms]
+      summary: Create a new farm
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FarmInput"
+      responses:
+        "201":
+          description: Created farm
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Farm"
+
+  /farms/{id}:
+    get:
+      operationId: getFarm
+      tags: [farms]
+      summary: Get a farm by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Farm details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Farm"
+        "404":
+          description: Not found
+    put:
+      operationId: updateFarm
+      tags: [farms]
+      summary: Update a farm
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FarmInput"
+      responses:
+        "200":
+          description: Updated farm
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Farm"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteFarm
+      tags: [farms]
+      summary: Delete a farm
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "204":
+          description: Deleted
+
+  # ─── Crops ───────────────────────────────────────────────────────────────────
+  /farms/{farmId}/crops:
+    get:
+      operationId: listCrops
+      tags: [crops]
+      summary: List crops for a farm
+      parameters:
+        - name: farmId
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: List of crops
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Crop"
+    post:
+      operationId: createCrop
+      tags: [crops]
+      summary: Add a crop to a farm
+      parameters:
+        - name: farmId
+          in: path
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CropInput"
+      responses:
+        "201":
+          description: Created crop
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Crop"
+
+  /crops/{id}:
+    get:
+      operationId: getCrop
+      tags: [crops]
+      summary: Get a crop by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Crop details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Crop"
+        "404":
+          description: Not found
+    put:
+      operationId: updateCrop
+      tags: [crops]
+      summary: Update a crop
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CropInput"
+      responses:
+        "200":
+          description: Updated crop
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Crop"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteCrop
+      tags: [crops]
+      summary: Delete a crop
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "204":
+          description: Deleted
+
+  # ─── Expenses ────────────────────────────────────────────────────────────────
+  /expenses:
+    get:
+      operationId: listExpenses
+      tags: [expenses]
+      summary: List expenses with optional filters
+      parameters:
+        - name: farmId
+          in: query
+          schema:
+            type: number
+        - name: cropId
+          in: query
+          schema:
+            type: number
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: List of expenses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Expense"
+    post:
+      operationId: createExpense
+      tags: [expenses]
+      summary: Record a new expense
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExpenseInput"
+      responses:
+        "201":
+          description: Created expense
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expense"
+
+  /expenses/summary:
+    get:
+      operationId: getExpenseSummary
+      tags: [expenses]
+      summary: Get monthly and yearly expense summaries
+      parameters:
+        - name: farmId
+          in: query
+          schema:
+            type: number
+        - name: year
+          in: query
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Expense summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExpenseSummary"
+
+  /expenses/{id}:
+    get:
+      operationId: getExpense
+      tags: [expenses]
+      summary: Get an expense by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Expense details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expense"
+        "404":
+          description: Not found
+    put:
+      operationId: updateExpense
+      tags: [expenses]
+      summary: Update an expense
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExpenseInput"
+      responses:
+        "200":
+          description: Updated expense
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expense"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteExpense
+      tags: [expenses]
+      summary: Delete an expense
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "204":
+          description: Deleted
+
+  # ─── Disease Detection ───────────────────────────────────────────────────────
+  /disease-detections:
+    get:
+      operationId: listDiseaseDetections
+      tags: [disease]
+      summary: List disease detection history
+      parameters:
+        - name: farmId
+          in: query
+          schema:
+            type: number
+        - name: cropId
+          in: query
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Detection history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DiseaseDetection"
+    post:
+      operationId: createDiseaseDetection
+      tags: [disease]
+      summary: Detect disease from a crop leaf image (base64)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DiseaseDetectionInput"
+      responses:
+        "201":
+          description: Detection result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DiseaseDetection"
+
+  /disease-detections/{id}:
+    get:
+      operationId: getDiseaseDetection
+      tags: [disease]
+      summary: Get a disease detection by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Detection detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DiseaseDetection"
+        "404":
+          description: Not found
+
+  # ─── Fertilizer Recommendations ──────────────────────────────────────────────
+  /fertilizer-recommendations:
+    get:
+      operationId: listFertilizerRecommendations
+      tags: [fertilizer]
+      summary: List fertilizer recommendation history
+      parameters:
+        - name: farmId
+          in: query
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Recommendation history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FertilizerRecommendation"
+    post:
+      operationId: createFertilizerRecommendation
+      tags: [fertilizer]
+      summary: Get fertilizer recommendation based on soil data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FertilizerRecommendationInput"
+      responses:
+        "201":
+          description: Recommendation result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FertilizerRecommendation"
+
+  /fertilizer-recommendations/{id}:
+    get:
+      operationId: getFertilizerRecommendation
+      tags: [fertilizer]
+      summary: Get a fertilizer recommendation by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Recommendation detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FertilizerRecommendation"
+        "404":
+          description: Not found
+
+  # ─── Market Prices ───────────────────────────────────────────────────────────
+  /market-prices:
+    get:
+      operationId: listMarketPrices
+      tags: [prices]
+      summary: List live crop market prices
+      parameters:
+        - name: crop
+          in: query
+          schema:
+            type: string
+        - name: state
+          in: query
+          schema:
+            type: string
+        - name: market
+          in: query
+          schema:
+            type: string
+        - name: date
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: Market price list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MarketPrice"
+
+  /market-prices/crops:
+    get:
+      operationId: listAvailableCrops
+      tags: [prices]
+      summary: List available crop names for filtering
+      responses:
+        "200":
+          description: Available crops
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /market-prices/predictions:
+    get:
+      operationId: listPricePredictions
+      tags: [prices]
+      summary: Get crop price predictions and trend analysis
+      parameters:
+        - name: crop
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Price predictions with trend data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PricePrediction"
+
+  # ─── Weather ────────────────────────────────────────────────────────────────
+  /weather:
+    get:
+      operationId: getWeather
+      tags: [weather]
+      summary: Get weather forecast for a location
+      parameters:
+        - name: latitude
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: longitude
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: location
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Weather forecast
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WeatherForecast"
+
+  # ─── Dashboard ──────────────────────────────────────────────────────────────
+  /dashboard:
+    get:
+      operationId: getDashboard
+      tags: [dashboard]
+      summary: Get dashboard summary stats
+      responses:
+        "200":
+          description: Dashboard data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+  # ─── Admin ──────────────────────────────────────────────────────────────────
+  /admin/users:
+    get:
+      operationId: adminListUsers
+      tags: [admin]
+      summary: List all users (admin only)
+      responses:
+        "200":
+          description: All users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AdminUser"
+
+  /admin/users/{id}/role:
+    put:
+      operationId: adminUpdateUserRole
+      tags: [admin]
+      summary: Update a user's role (admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoleUpdate"
+      responses:
+        "200":
+          description: Updated user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminUser"
+        "404":
+          description: Not found
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +699,511 @@ components:
       required:
         - status
 
+    # ── Users ──────────────────────────────────────────────────────────────────
+    UserProfile:
+      type: object
+      required: [id, clerkId, email, role, createdAt]
+      properties:
+        id:
+          type: number
+        clerkId:
+          type: string
+        email:
+          type: string
+        name:
+          type: ["string", "null"]
+        phone:
+          type: ["string", "null"]
+        state:
+          type: ["string", "null"]
+        role:
+          type: string
+          enum: [farmer, admin]
+        createdAt:
+          type: string
+          format: date-time
+
+    UserProfileUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        phone:
+          type: string
+        state:
+          type: string
+
+    AdminUser:
+      type: object
+      required: [id, clerkId, email, role, createdAt]
+      properties:
+        id:
+          type: number
+        clerkId:
+          type: string
+        email:
+          type: string
+        name:
+          type: ["string", "null"]
+        role:
+          type: string
+          enum: [farmer, admin]
+        createdAt:
+          type: string
+          format: date-time
+        farmsCount:
+          type: number
+
+    RoleUpdate:
+      type: object
+      required: [role]
+      properties:
+        role:
+          type: string
+          enum: [farmer, admin]
+
+    # ── Farms ──────────────────────────────────────────────────────────────────
+    Farm:
+      type: object
+      required: [id, userId, name, location, area, soilType, createdAt]
+      properties:
+        id:
+          type: number
+        userId:
+          type: number
+        name:
+          type: string
+        location:
+          type: string
+        area:
+          type: number
+          description: Area in acres
+        soilType:
+          type: string
+          enum: [clay, sandy, loamy, silty, peaty, chalky]
+        description:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+        cropsCount:
+          type: number
+
+    FarmInput:
+      type: object
+      required: [name, location, area, soilType]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        location:
+          type: string
+          minLength: 1
+        area:
+          type: number
+          minimum: 0
+        soilType:
+          type: string
+          enum: [clay, sandy, loamy, silty, peaty, chalky]
+        description:
+          type: string
+
+    # ── Crops ──────────────────────────────────────────────────────────────────
+    Crop:
+      type: object
+      required: [id, farmId, name, status, plantingDate, createdAt]
+      properties:
+        id:
+          type: number
+        farmId:
+          type: number
+        name:
+          type: string
+        variety:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [growing, harvested, failed, planned]
+        plantingDate:
+          type: string
+          format: date
+        harvestDate:
+          type: ["string", "null"]
+          format: date
+        expectedYield:
+          type: ["number", "null"]
+          description: Expected yield in kg
+        actualYield:
+          type: ["number", "null"]
+          description: Actual yield in kg
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+
+    CropInput:
+      type: object
+      required: [name, plantingDate, status]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        variety:
+          type: string
+        status:
+          type: string
+          enum: [growing, harvested, failed, planned]
+        plantingDate:
+          type: string
+          format: date
+        harvestDate:
+          type: string
+          format: date
+        expectedYield:
+          type: number
+        actualYield:
+          type: number
+        notes:
+          type: string
+
+    # ── Expenses ──────────────────────────────────────────────────────────────
+    Expense:
+      type: object
+      required: [id, farmId, category, amount, date, createdAt]
+      properties:
+        id:
+          type: number
+        farmId:
+          type: number
+        cropId:
+          type: ["number", "null"]
+        category:
+          type: string
+          enum: [seeds, fertilizers, pesticides, labor, irrigation, equipment, other]
+        amount:
+          type: number
+        description:
+          type: ["string", "null"]
+        date:
+          type: string
+          format: date
+        createdAt:
+          type: string
+          format: date-time
+
+    ExpenseInput:
+      type: object
+      required: [farmId, category, amount, date]
+      properties:
+        farmId:
+          type: number
+        cropId:
+          type: number
+        category:
+          type: string
+          enum: [seeds, fertilizers, pesticides, labor, irrigation, equipment, other]
+        amount:
+          type: number
+          minimum: 0
+        description:
+          type: string
+        date:
+          type: string
+          format: date
+
+    ExpenseSummary:
+      type: object
+      required: [totalYear, byMonth, byCategory]
+      properties:
+        totalYear:
+          type: number
+        byMonth:
+          type: array
+          items:
+            type: object
+            required: [month, total]
+            properties:
+              month:
+                type: string
+              total:
+                type: number
+        byCategory:
+          type: array
+          items:
+            type: object
+            required: [category, total]
+            properties:
+              category:
+                type: string
+              total:
+                type: number
+
+    # ── Disease Detection ────────────────────────────────────────────────────
+    DiseaseDetection:
+      type: object
+      required: [id, farmId, diseaseName, confidence, symptoms, treatment, imageUrl, createdAt]
+      properties:
+        id:
+          type: number
+        farmId:
+          type: number
+        cropId:
+          type: ["number", "null"]
+        imageUrl:
+          type: string
+        diseaseName:
+          type: string
+        confidence:
+          type: number
+          description: Confidence score 0–1
+        symptoms:
+          type: string
+        treatment:
+          type: string
+        isHealthy:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+
+    DiseaseDetectionInput:
+      type: object
+      required: [farmId, imageBase64]
+      properties:
+        farmId:
+          type: number
+        cropId:
+          type: number
+        imageBase64:
+          type: string
+          description: Base64-encoded crop leaf image
+
+    # ── Fertilizer ──────────────────────────────────────────────────────────
+    FertilizerRecommendation:
+      type: object
+      required: [id, farmId, soilType, nitrogen, phosphorus, potassium, ph, fertilizerName, dosage, schedule, createdAt]
+      properties:
+        id:
+          type: number
+        farmId:
+          type: number
+        soilType:
+          type: string
+        nitrogen:
+          type: number
+        phosphorus:
+          type: number
+        potassium:
+          type: number
+        ph:
+          type: number
+        cropName:
+          type: ["string", "null"]
+        fertilizerName:
+          type: string
+        dosage:
+          type: string
+        schedule:
+          type: string
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+
+    FertilizerRecommendationInput:
+      type: object
+      required: [farmId, soilType, nitrogen, phosphorus, potassium, ph]
+      properties:
+        farmId:
+          type: number
+        soilType:
+          type: string
+          enum: [clay, sandy, loamy, silty, peaty, chalky]
+        nitrogen:
+          type: number
+          minimum: 0
+          maximum: 140
+        phosphorus:
+          type: number
+          minimum: 5
+          maximum: 145
+        potassium:
+          type: number
+          minimum: 5
+          maximum: 205
+        ph:
+          type: number
+          minimum: 0
+          maximum: 14
+        cropName:
+          type: string
+
+    # ── Market Prices ──────────────────────────────────────────────────────
+    MarketPrice:
+      type: object
+      required: [id, cropName, state, market, minPrice, maxPrice, modalPrice, date]
+      properties:
+        id:
+          type: number
+        cropName:
+          type: string
+        variety:
+          type: ["string", "null"]
+        state:
+          type: string
+        market:
+          type: string
+        minPrice:
+          type: number
+        maxPrice:
+          type: number
+        modalPrice:
+          type: number
+        unit:
+          type: string
+        date:
+          type: string
+          format: date
+
+    PricePrediction:
+      type: object
+      required: [cropName, historical, predicted, bestSellingMonth, trend]
+      properties:
+        cropName:
+          type: string
+        historical:
+          type: array
+          items:
+            type: object
+            required: [date, price]
+            properties:
+              date:
+                type: string
+              price:
+                type: number
+        predicted:
+          type: array
+          items:
+            type: object
+            required: [date, price, isForecasted]
+            properties:
+              date:
+                type: string
+              price:
+                type: number
+              isForecasted:
+                type: boolean
+        bestSellingMonth:
+          type: string
+        trend:
+          type: string
+          enum: [rising, falling, stable]
+        avgPrice:
+          type: number
+
+    # ── Weather ────────────────────────────────────────────────────────────
+    WeatherForecast:
+      type: object
+      required: [location, current, daily, farmingAdvice]
+      properties:
+        location:
+          type: string
+        current:
+          type: object
+          required: [temperature, humidity, windspeed, weatherCode, description]
+          properties:
+            temperature:
+              type: number
+            humidity:
+              type: number
+            windspeed:
+              type: number
+            weatherCode:
+              type: number
+            description:
+              type: string
+        daily:
+          type: array
+          items:
+            type: object
+            required: [date, tempMax, tempMin, precipitation, weatherCode, description]
+            properties:
+              date:
+                type: string
+              tempMax:
+                type: number
+              tempMin:
+                type: number
+              precipitation:
+                type: number
+              weatherCode:
+                type: number
+              description:
+                type: string
+        farmingAdvice:
+          type: array
+          items:
+            type: string
+
+    # ── Dashboard ──────────────────────────────────────────────────────────
+    DashboardSummary:
+      type: object
+      required: [totalFarms, activeCrops, totalExpenses, estimatedProfit, recentAlerts, expenseByCategory, recentDiseaseDetections, upcomingHarvests]
+      properties:
+        totalFarms:
+          type: number
+        activeCrops:
+          type: number
+        totalCrops:
+          type: number
+        totalExpenses:
+          type: number
+        estimatedProfit:
+          type: number
+        recentAlerts:
+          type: array
+          items:
+            type: object
+            required: [id, type, message, createdAt]
+            properties:
+              id:
+                type: number
+              type:
+                type: string
+                enum: [disease, weather, price]
+              message:
+                type: string
+              createdAt:
+                type: string
+                format: date-time
+        expenseByCategory:
+          type: array
+          items:
+            type: object
+            required: [category, total]
+            properties:
+              category:
+                type: string
+              total:
+                type: number
+        recentDiseaseDetections:
+          type: array
+          items:
+            $ref: "#/components/schemas/DiseaseDetection"
+        upcomingHarvests:
+          type: array
+          items:
+            type: object
+            required: [cropId, cropName, farmName, harvestDate]
+            properties:
+              cropId:
+                type: number
+              cropName:
+                type: string
+              farmName:
+                type: string
+              harvestDate:
+                type: string
+                format: date

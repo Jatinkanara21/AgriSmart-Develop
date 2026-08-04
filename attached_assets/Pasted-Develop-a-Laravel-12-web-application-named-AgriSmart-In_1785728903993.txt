@@ -1,0 +1,107 @@
+Develop a Laravel 12 web application named "AgriSmart – Intelligent Farm Management and Decision Support System".
+
+Project Goal:
+Help farmers manage farms, monitor crop health, receive fertilizer recommendations, track crop prices, and maintain farm records.
+
+Modules:
+
+1. Authentication
+- Farmer registration and login
+- Admin login
+- Role-based access control
+
+2. Farm Management
+- Add/Edit/Delete farms
+- Farm details: name, location, area, soil type
+- Multiple farms per farmer
+
+3. Crop Management
+- Add crops to farms
+- Planting date
+- Harvest date
+- Crop status
+- Yield records
+
+4. Expense Management
+- Track seeds, fertilizers, pesticides, labor, irrigation costs
+- Monthly and yearly expense reports
+
+5. Disease Detection
+- Upload crop leaf image
+- Store image
+- Send image to Python API for disease prediction
+- Display disease name, confidence score, symptoms, and treatment
+- Save prediction history
+
+6. Fertilizer Recommendation
+- Input soil type, Nitrogen, Phosphorus, Potassium, and pH values
+- Recommend suitable fertilizer
+- Display dosage and application schedule
+- Store recommendation history
+
+7. Live Crop Market Prices
+- Integrate free Agmarknet/Data.gov.in API
+- Display daily market prices
+- Filter by crop, state, market, and date
+- Store fetched data locally for faster access
+
+8. Crop Price Prediction
+- Use historical crop prices
+- Predict future prices
+- Display trend charts using Chart.js
+- Show best selling period
+
+9. Weather Module
+- Integrate Open-Meteo API
+- Display temperature, humidity, rainfall forecast
+- Provide farming recommendations based on weather
+
+10. Dashboard
+- Total farms
+- Active crops
+- Disease alerts
+- Fertilizer recommendations
+- Crop price trends
+- Total expenses
+- Estimated profit
+
+Database Tables:
+users
+farms
+crops
+expenses
+harvests
+diseases
+disease_predictions
+soil_tests
+fertilizers
+fertilizer_recommendations
+crop_prices
+price_predictions
+
+Tech Stack:
+- Laravel 12
+- MySQL
+- Bootstrap 5
+- Chart.js
+- Laravel Breeze Authentication
+- REST API Integration
+- Python FastAPI for Disease Detection
+
+Additional Features:
+- Gujarati language support
+- Export reports to PDF
+- Responsive mobile-friendly UI
+- Admin panel for managing users and crop data
+
+Generate:
+- Complete database migrations
+- Models
+- Controllers
+- Routes
+- Blade templates
+- API integrations
+- Seeders with sample agricultural data
+- Dashboard charts
+- Clean MVC architecture
+- Proper validation and error handling
